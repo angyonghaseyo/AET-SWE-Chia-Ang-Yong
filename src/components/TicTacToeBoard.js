@@ -10,8 +10,14 @@ const TicTacToeBoard = () => {
   const [board, setBoard] = useState(Array(9).fill(null));
   const [currentPlayer, setCurrentPlayer] = useState('X');
   const [winner, setWinner] = useState(null);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+
+ 
 
   useEffect(() => {
+
+
+
     // Fetch initial game state from the API
     api.getGameState(sessionId)
       .then(response => {
@@ -25,6 +31,8 @@ const TicTacToeBoard = () => {
         console.error('Error fetching game state:', error);
       });
 
+
+      
     // Establish WebSocket connection
     
 
@@ -41,12 +49,43 @@ const TicTacToeBoard = () => {
       setWinner(updatedSessionState.winner);
     });
 
-    // Clean up the socket connection when the component unmounts
+    const SpeechRecognition = window.speechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    recognition.continuous = true; // Keep listening even after a command is recognized
+    recognition.lang = 'en-SG';
+
+    recognition.onstart = () => {
+      console.log('Speech recognition started');
+    };
+
+    recognition.onerror = (event) => {
+      console.error('Speech recognition error', event.error);
+
+    };
+    
+    recognition.onend = () => {
+      
+      console.log('Speech recognition ended');
+    };
+
+    recognition.onresult = (event) => {
+      const transcript = event.results[event.results.length - 1][0].transcript.trim();
+      console.log(transcript);
+      handleVoiceCommand(transcript);
+    };
+
+    recognition.start();
+
+
     return () => {
+      recognition.stop();
       socket.disconnect();
     };
+
   }, [sessionId]); // Dependency array ensures this effect runs only when sessionId changes
 
+
+  
   const handleCellClick = async (index) => {
     if (board && !board[index] && !winner) {
       // Emit 'make move' event to the server
@@ -55,11 +94,51 @@ const TicTacToeBoard = () => {
     }
   };
 
+  const readCellInfo = (index) => {
+
+    setIsSpeaking(true);
+
+    const row = Math.floor(index / 3) + 1; // Calculate row
+    const col = (index % 3) + 1;           // Calculate column
+    const value = board[index] ? board[index] : 'empty';
+
+    console.log(`Row: ${row}, Column: ${col}, Value: ${value}`);
+
+
+    const msg = new SpeechSynthesisUtterance();
+    msg.text = `Row: ${row}, Column: ${col}, Value: ${value}`;
+    msg.onend = () => {
+      setIsSpeaking(false);
+  };
+    window.speechSynthesis.speak(msg);
+
+};
+
+
+const handleVoiceCommand = (transcript) => {
+  // Parse the transcript to extract row and column
+  const matches = transcript.match(/row (\d) column (\d)/i);
+  if (matches) {
+    console.log("matched")
+
+    const row = parseInt(matches[1], 10);
+    const col = parseInt(matches[2], 10);
+    const index = (row - 1) * 3 + (col - 1);
+    if (index >= 0 && index < 9) {
+      handleCellClick(index);
+    }
+  }
+};
+
   const renderCell = (index) => {
     return (
-      <button className="cell" onClick={() => handleCellClick(index)} disabled={!!winner || board[index]}>
-        {board[index]}
-      </button>
+        <button 
+            className="cell" 
+            onClick={() => handleCellClick(index)} 
+            onMouseEnter={() => !isSpeaking && readCellInfo(index)}
+            disabled={!!winner}>
+            {board[index]}
+        </button>
     );
   };
 
