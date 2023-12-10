@@ -52,6 +52,10 @@ Open your web browser and go to the URL where the React application is running, 
 - The game concludes with a win or draw announcement.
 - Choose to play again or end the session.
 
+## Screen Capture a video walking through how a person with sensory impairment would interact with the game
+[Accessible Tic Tac Toe](https://youtu.be/YVicHqvCod8)
+
+
 
 ## API Functions/Specifications
 
