@@ -1,70 +1,174 @@
-# Getting Started with Create React App
+# Tic-Tac-Toe Web Application
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Prerequisites
 
-## Available Scripts
+Before you start, ensure you have the following installed:
+- Node.js and npm (Node Package Manager)
+- MongoDB (for local database usage)
+- 2 modern web browsers (e.g., Chrome, Safari)
 
-In the project directory, you can run:
+## Initial Setup
 
-### `npm start`
+### 1. Clone the Repository
+Clone your project's Git repository to your local machine, or ensure all project files are present locally.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### 2. Install Dependencies
+- Navigate to your project's root directory in the terminal.
+- Run `npm install` to install backend dependencies.
+- If you have a separate frontend directory, navigate there and run `npm install` as well.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### 3. Database Setup
+- Make sure MongoDB is running on your machine.
+- Configure the MongoDB URI in your application settings (check `server.js` or environment variables).
 
-### `npm test`
+### 4. Environment Variables
+Set up required environment variables, such as `REACT_APP_SERVER_URL`, to point to your backend server.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### 5. Start the Backend Server
+- At the root of your backend project, run `node server.js` in the terminal to start the server.
 
-### `npm run build`
+### 6. Start the Frontend Application
+- Open a new terminal, navigate to your frontend directory, and run `npm start` to launch the application.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Playing the Game
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### 1. Load the Application
+Open your web browser and go to the URL where the React application is running, typically `http://localhost:3000`.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### 2. Create a Game Session
+- On the homepage, click the "Create Game Session" button or similar.
+- A new game session should be created, possibly redirecting you to a waiting room or game board.
 
-### `npm run eject`
+### 3. Join the Game Session in Another Browser
+- Open a different browser or an incognito window.
+- Navigate to `http://localhost:3000`.
+- Enter a username if required and join the created game session.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### 4. Play the Game
+- The game starts, and players take turns making moves.
+- Continue until there's a winner or a draw.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### 5. End the Game
+- The game concludes with a win or draw announcement.
+- Choose to play again or end the session.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## API Functions/Specifications
 
-## Learn More
+### 1. Create a New Game Session
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+- **Endpoint:** `/api/sessions`
+- **Method:** POST
+- **Body Parameters:**
+  - `playerName`: String (name of the player creating the session)
+- **Response:**
+  - A new game session object with details including `sessionId`, `players`, `currentState`, etc.
+- **cURL Example:**
+  ```bash
+  curl -X POST http://localhost:5000/api/sessions \
+  -H 'Content-Type: application/json' \
+  -d '{"playerName": "Alice"}'
+  ```
+- **Postman Example:**
+  - Set the method to POST, URL to `http://localhost:5000/api/sessions`. In the Body section, select `raw` and `JSON`, then input `{"playerName": "Alice"}`.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### 2. Get All Game Sessions
 
-### Code Splitting
+- **Endpoint:** `/api/sessions`
+- **Method:** GET
+- **Response:**
+  - An array of all game session objects.
+- **cURL Example:**
+  ```bash
+  curl -X GET http://localhost:5000/api/sessions
+  ```
+- **Postman Example:**
+  - Set the method to GET and URL to `http://localhost:5000/api/sessions`.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+### 3. Get Specific Game Session
 
-### Analyzing the Bundle Size
+- **Endpoint:** `/api/sessions/:id`
+- **Method:** GET
+- **URL Parameters:**
+  - `id`: Session ID
+- **Response:**
+  - The game session object corresponding to the provided ID.
+- **cURL Example:**
+  ```bash
+  curl -X GET http://localhost:5000/api/sessions/{sessionId}
+  ```
+- **Postman Example:**
+  - Set the method to GET and URL to `http://localhost:5000/api/sessions/{sessionId}`. Replace `{sessionId}` with the actual session ID.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+### 4. Make a Move in a Game Session
 
-### Making a Progressive Web App
+- **Endpoint:** `/api/sessions/:id/move`
+- **Method:** PUT
+- **URL Parameters:**
+  - `id`: Session ID
+- **Body Parameters:**
+  - `player`: 'X' or 'O'
+  - `position`: Index on the board (0-8)
+- **Response:**
+  - The updated game session object after the move.
+- **cURL Example:**
+  ```bash
+  curl -X PUT http://localhost:5000/api/sessions/{sessionId}/move \
+  -H 'Content-Type: application/json' \
+  -d '{"player": "X", "position": 4}'
+  ```
+- **Postman Example:**
+  - Set the method to PUT, URL to `http://localhost:5000/api/sessions/{sessionId}/move`. In the Body section, select `raw` and `JSON`, then input `{"player": "X", "position": 4}`.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+### 5. Get Game State of a Specific Session
 
-### Advanced Configuration
+- **Endpoint:** `/api/sessions/:_id/state`
+- **Method:** GET
+- **URL Parameters:**
+  - `_id`: Session ID
+- **Response:**
+  - Current game state of the specified session.
+- **cURL Example:**
+  ```bash
+  curl -X GET http://localhost:5000/api/sessions/{sessionId}/state
+  ```
+- **Postman Example:**
+  - Set the method to GET and URL to `http://localhost:5000/api/sessions/{sessionId}/state`.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+### 6. Join a Game Session
 
-### Deployment
+- **Endpoint:** `/api/sessions/:id/join`
+- **Method:** POST
+- **URL Parameters:**
+  - `id`: Session ID
+- **Body Parameters:**
+  - `playerName`: String
+- **Response:**
+  - The updated game session object after joining.
+- **cURL Example:**
+  ```bash
+  curl -X POST http://localhost:5000/api/sessions/{sessionId}/join \
+  -H 'Content-Type: application/json' \
+  -d '{"playerName": "Bob"}'
+  ```
+- **Postman Example:**
+  - Set the method to POST, URL to `http://localhost:5000/api/sessions/{sessionId}/join`. In the Body section, select `raw` and `JSON`, then input `{"playerName": "Bob"}`.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
 
-### `npm run build` fails to minify
+## Summary of Design/Infrastructure Decisions and Accessibility Considerations
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+In designing the Tic-Tac-Toe web application, a strong emphasis was placed on accessibility to ensure an inclusive and barrier-free gaming experience for all users. The decision to employ a username-based system for user identification, bypassing the complexities of a traditional authentication process, significantly lowers the entry threshold for players. This approach not only speeds up the onboarding process but also makes the game more approachable, especially for users who might find account creation and management challenging.
+
+For the backend, MongoDB was chosen for its flexible data schema, which is particularly beneficial for storing varied user data and game states. This adaptability in data handling is essential in creating a responsive and seamless gaming experience. Coupled with Node.js and Express, this setup provides a robust infrastructure capable of handling real-time interactions, a critical aspect of multiplayer online games.
+
+The frontend, developed with React, enhances user interaction through a responsive and dynamic interface. React's capacity to manage stateful components and efficiently update the DOM in response to user actions contributes to a smooth and accessible user experience.
+
+A significant portion of the development effort was dedicated to implementing accessibility features. The application is designed to be compatible with screen readers, enabling visually impaired users to navigate and interact with the game effectively. Additionally, functionalities to audibly read the board and announce game states were integrated. These features not only aid users with visual impairments but also enhance the overall user experience by adding an auditory dimension to the game.
+
+Overall, the application's design is a thoughtful blend of technology and accessibility considerations. By prioritizing user-friendliness through a simplified login process, leveraging a flexible and efficient technology stack, and incorporating key accessibility features, the Tic-Tac-Toe game stands as an inclusive and engaging platform, welcoming a diverse range of players to enjoy this classic game.
+
+
+## Architecture Diagram
+<img width="334" alt="Architecture" src="https://github.com/angyonghaseyo/AET-SWE-Chia-Ang-Yong/assets/89739997/99a8b4e4-9424-4a9d-9515-4a676369db34">
+
+
