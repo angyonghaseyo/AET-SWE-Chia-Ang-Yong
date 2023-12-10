@@ -34,6 +34,28 @@ let sessionPlayerSockets = {};
 // WebSocket logic
 io.on('connection', (socket) => {
 
+  socket.on('reset game', async (sessionId) => {
+    console.log("resetting")
+    try {
+      let session = await GameSession.findById(sessionId);
+      if (!session) {
+        socket.emit('error', 'Session not found');
+        return;
+      }
+
+      // Reset the game state
+      session.currentState = Array(9).fill(null);
+      session.winner = null;
+      session.status = 'in_progress';
+      await session.save();
+
+      // Emit the updated session state to all clients
+      io.emit('game update', session);
+    } catch (error) {
+      socket.emit('error', error.message);
+    }
+  });
+
   socket.on('join session', async (sessionId) => {
     
     try {
@@ -80,6 +102,14 @@ io.on('connection', (socket) => {
         await session.save();
         io.emit('session update', session);
         socket.emit('player type', playerType);
+
+        // Update player count in the database
+        session.playerCount = Object.keys(sessionPlayerSockets[sessionId]).length;
+        await session.save();
+        // Emit player count update
+        const playerCount = Object.keys(sessionPlayerSockets[sessionId]).length;
+        io.emit('player count update', { sessionId, playerCount });
+
       } catch (error) {
         socket.emit('error', error.message);
       }
@@ -99,6 +129,13 @@ io.on('connection', (socket) => {
 
             // Remove the player's socket ID from the tracking object
             delete sessionPlayerSockets[sessionId][playerType];
+
+            // Emit player count update
+            const playerCount = session ? Object.keys(sessionPlayerSockets[sessionId]).length : 0;
+            io.emit('player count update', { sessionId, playerCount });
+            // Update player count in the database
+            session.playerCount = Object.keys(sessionPlayerSockets[sessionId]).length;
+            await session.save();
             break;
           }
         }
@@ -107,7 +144,6 @@ io.on('connection', (socket) => {
   });
   socket.on('make move', async (sessionId, position) => {
     try {
-      console.log('making move')
 
       let session = await GameSession.findById(sessionId);
       if (!session || session.status !== 'in_progress') {
@@ -115,7 +151,6 @@ io.on('connection', (socket) => {
         socket.emit('error', 'Invalid session state');
         return;
       }
-      console.log('making move2')
 
       // Determine the player type based on the socket ID
       const playerTypes = sessionPlayerSockets[sessionId];
@@ -125,7 +160,6 @@ io.on('connection', (socket) => {
         socket.emit('error', 'Session not found in socket tracking');
         return;
       }
-      console.log('making move3')
   
       const playerType = Object.keys(playerTypes).find(type => playerTypes[type] === socket.id);
       console.log(sessionPlayerSockets)
@@ -137,7 +171,6 @@ io.on('connection', (socket) => {
         socket.emit('error', 'Player not recognized in the session');
         return;
       }
-      console.log('making move4')
       console.log(playerType)
       // Check if it's the correct player's turn
       console.log(session.currentPlayer)
@@ -154,10 +187,8 @@ io.on('connection', (socket) => {
       console.log(isValidMove)
       console.log(session.currentState)
       console.log(position)
-      console.log('making move5')
 
       if (isValidMove) {
-      console.log('making move6')
 
         // Assign the move based on the player type
         session.currentState[position] = playerType === 'X' ? 'X' : 'O';
@@ -178,18 +209,13 @@ io.on('connection', (socket) => {
         socket.emit('error', 'Invalid move');
       }
     } catch (error) {
-      console.log("errpor  ")
       console.log(error.message)
 
       socket.emit('error', error.message);
     }
-    console.log('making move7')
 
   });
   
-  socket.on('disconnect', () => {
-    // Handle disconnection logic if necessary
-  });
 });
 
 // Start the server with WebSocket support

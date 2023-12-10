@@ -1,27 +1,41 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom'; // Keep the useNavigate hook
+import { useNavigate } from 'react-router-dom';
+import socket from './socket'; 
 
 const GameList = ({ onSelectSession, userName }) => {
+    const [playerCounts, setPlayerCounts] = useState({}); // State to track player counts
     const [sessions, setSessions] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
-    const navigate = useNavigate(); // Initialize the navigate function
+    const navigate = useNavigate(); 
 
     useEffect(() => {
+
+        // Listen for player count updates
+        socket.on('player count update', (data) => {
+            setPlayerCounts(prevCounts => ({
+                ...prevCounts,
+                [data.sessionId]: data.playerCount
+            }));
+        });
+
         fetchSessions();
+
     }, []);
 
     const fetchSessions = async () => {
         try {
             setLoading(true);
             const response = await axios.get('/api/sessions');
-            // Make sure the response is an array
-            if (Array.isArray(response.data)) {
-                setSessions(response.data);
-            } else {
-                throw new Error('Data is not an array');
-            }
+            setSessions(response.data);
+
+            // Initialize player counts from fetched data
+            const initialCounts = response.data.reduce((counts, session) => {
+                counts[session._id] = session.playerCount;
+                return counts;
+            }, {});
+            setPlayerCounts(initialCounts);
         } catch (err) {
             setError('Failed to fetch sessions: ' + err.message);
         } finally {
@@ -59,7 +73,7 @@ const GameList = ({ onSelectSession, userName }) => {
                     session && session._id ? (
                         <li key={session._id}>
                             <button onClick={() => handleSelectSession(session._id)}>
-                                Game Session {session._id}
+                            Game Session {session._id} - Players: {playerCounts[session._id] || 0}/2
                             </button>
                         </li>
                     ) : null

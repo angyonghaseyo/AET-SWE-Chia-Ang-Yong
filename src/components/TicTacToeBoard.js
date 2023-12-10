@@ -12,7 +12,10 @@ const TicTacToeBoard = () => {
   const [winner, setWinner] = useState(null);
   const [isSpeaking, setIsSpeaking] = useState(false);
 
- 
+  const resetGame = () => {
+    socket.emit('reset game', sessionId);
+  };
+
 
   useEffect(() => {
 
@@ -49,10 +52,10 @@ const TicTacToeBoard = () => {
       setWinner(updatedSessionState.winner);
     });
 
-    const SpeechRecognition = window.speechRecognition || window.webkitSpeechRecognition;
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     const recognition = new SpeechRecognition();
     recognition.continuous = true; // Keep listening even after a command is recognized
-    recognition.lang = 'en-SG';
+    recognition.lang = 'en-US';
 
     recognition.onstart = () => {
       console.log('Speech recognition started');
@@ -148,6 +151,9 @@ const handleVoiceCommand = (transcript) => {
         {Array.from({ length: 9 }, (_, index) => renderCell(index))}
       </div>
       {winner && <div className="winner">Winner: {winner}</div>}
+
+      <button onClick={resetGame}>Start New Game</button>
+
     </div>
   );
 };

@@ -11,6 +11,10 @@ const gameSessionSchema = new mongoose.Schema({
     default: [], // allow players to be empty initially
     validate: [arrayLimit, '{PATH} exceeds the limit of 2']
   },
+  playerCount: {
+    type: Number,
+    default: 0
+  },
   playerNames: {
     type: [String],
     default: [] // New field to store player names
