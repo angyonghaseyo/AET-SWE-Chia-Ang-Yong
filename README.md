@@ -169,6 +169,6 @@ Overall, the application's design is a thoughtful blend of technology and access
 
 
 ## Architecture Diagram
-<img width="334" alt="Architecture" src="https://github.com/angyonghaseyo/AET-SWE-Chia-Ang-Yong/assets/89739997/99a8b4e4-9424-4a9d-9515-4a676369db34">
+<img width="1002" alt="Architecture" src="https://github.com/angyonghaseyo/AET-SWE-Chia-Ang-Yong/assets/89739997/99a8b4e4-9424-4a9d-9515-4a676369db34">
 
 
