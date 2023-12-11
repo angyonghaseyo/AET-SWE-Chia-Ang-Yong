@@ -1,4 +1,30 @@
-# Tic-Tac-Toe Web Application
+# Accessible Tic-Tac-Toe Web Application
+Welcome to our acessible Tic Tac Toe web application — an interactive, real-time, multiplayer game built with modern web technologies. This application is designed to provide an engaging gaming experience for everyone.
+
+## Key Features
+
+- **Multiplayer Gameplay**: Challenge friends or other online users in real-time matches.
+- **Real-Time Updates**: Experience seamless gameplay with instant updates on every move, thanks to WebSocket technology.
+- **Intuitive Interface**: Our React-based UI is user-friendly, ensuring that players of all ages can navigate and enjoy the game with ease.
+- **Session Management**: Join existing games or create new ones with a simple click, and track your game's progress effortlessly.
+
+## Accessibility Features
+
+Our Tic Tac Toe web application is designed with accessibility in mind, ensuring that all players have a user-friendly experience. Here are our key accessibility features:
+
+- **Simple User Identification**: Instead of complex authentication processes, users can start playing by simply typing in their name. This makes the game quickly accessible while still personalizing the experience as all game data is linked to the user's name.
+- **Screen Reader Support**: Our application supports screen readers, with the game instructions read aloud when users hover over text elements. This ensures that visually impaired users can understand how to play the game without seeing the screen.
+- **Descriptive Audio Feedback**: As part of our commitment to accessible gaming, our application provides audio feedback on the state of the game board. The screen reader announces the row and column of each cell, as well as which player has made a mark there, allowing visually impaired users to track the game's progress audibly.
+- **Voice Command Functionality (Coming Soon)**: We are working on implementing voice command functionality to allow users to control gameplay through spoken instructions. This hands-free feature will enhance accessibility and ease of use for all users, especially those who rely on voice navigation.
+
+## Technology Stack
+
+- **Frontend**: React.js for dynamic component rendering.
+- **Backend**: Node.js with Express.js for API management and WebSocket connections.
+- **Database**: MongoDB for persistent data storage.
+- **Real-Time Communication**: Socket.IO for real-time bidirectional event-based communication.
+
+Enjoy the game, and may the best player win!
 
 ## Prerequisites
 
@@ -174,5 +200,15 @@ Overall, the application's design is a thoughtful blend of technology and access
 
 ## Architecture Diagram
 <img width="1002" alt="Architecture" src="https://github.com/angyonghaseyo/AET-SWE-Chia-Ang-Yong/assets/89739997/99a8b4e4-9424-4a9d-9515-4a676369db34">
+User Interface (React Frontend): This is the client-side of the application where the users interact with the application through its UI components. It consists of TicTacToeBoard, GameList, and WaitingRoom components.
 
+API Calls: The React frontend communicates with the backend application layer using API calls. These are likely HTTP requests sent to the Node.js/Express server.
+
+Real-time Updates: Alongside API calls, there is a WebSocket connection established for real-time updates. This would be important for a game like Tic Tac Toe to update the game board in real-time without needing to refresh the page.
+
+Application Layer (Node.js/Express): This layer handles the logic of the application, processes API calls, manages WebSocket connections, and interacts with the database. It serves as the intermediary between the frontend and the database.
+
+Data Queries: This represents the interactions between the application layer and the database, where data is queried, retrieved, stored, and updated in the MongoDB database.
+
+Database Layer (MongoDB): This is the data storage layer of the application. It holds the data needed by the application, such as game sessions, user accounts, game states, etc.
 
